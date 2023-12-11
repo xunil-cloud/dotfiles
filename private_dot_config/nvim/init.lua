@@ -269,6 +269,8 @@ vim.o.splitright = true
 vim.o.cursorline = true
 vim.o.statusline = 3
 
+vim.o.scrolloff = 8
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
