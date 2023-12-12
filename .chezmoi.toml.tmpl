@@ -2,3 +2,6 @@
 command = "/usr/bin/fish"
 args = ["-l"]
 
+[merge]
+command = "nvim"
+args = ["-d", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}", "{{ "{{ .Target }}" }}"]
