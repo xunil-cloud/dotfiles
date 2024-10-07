@@ -20,6 +20,8 @@ config.font_size = 14
 -- Spawn a fish shell in login mode
 config.default_prog = { '/usr/bin/fish', '-l' }
 
+config.scrollback_lines = 100000
+
 -- and finally, return the configuration to wezterm
 return config
 
