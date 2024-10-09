@@ -7,13 +7,15 @@ abbr che chezmoi
 set -x EDITOR nvim
 set -x VISUAL nvim
 
-source $HOME/.cargo/env.fish
-
-if test -d $HOME/nvim-linux64/bin
-	fish_add_path $HOME/nvim-linux/bin
+function try_fish_add_path
+	if test -d $argv[1]
+		fish_add_path $argv[1]
+	end
 end
 
+try_fish_add_path $HOME/nvim-linux64/bin
 fish_add_path $HOME/.local/bin
+try_fish_add_path $HOME/.cargo/bin
 
 starship init fish | source
 zoxide init fish | source
