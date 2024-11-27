@@ -13,7 +13,8 @@ end
 -- This is where you actually apply your config choices
 
 -- For example, changing the color scheme:
-config.color_scheme = 'Chalk'
+-- config.color_scheme = 'Chalk'
+config.color_scheme = 'Breeze (Gogh)'
 -- config.color_scheme = 'OneDark (base16)'
 config.font_size = 14
 
