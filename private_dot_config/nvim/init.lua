@@ -602,8 +602,7 @@ mason_lspconfig.setup_handlers {
       capabilities = capabilities,
       on_attach = on_attach,
       settings = servers['clangd'],
-      cmd = { "clangd", "--clang-tidy",
-        "--query-driver=/home/benson/sdk/buildroot_nt98530/aarch64-buildroot-linux-gnu_sdk-buildroot/bin/aarch64-linux-g*,/home/benson/src/ve8662_fw_buildroot/buildroot/builddir/dev/host/bin/aarch64-linux-g*,/opt/aarch64-ca53-linux-gnueabihf-8.4.01/bin/aarch64-ca53-linux-gnu-g*,/usr/bin/g*,/opt/aarch64-ca53-linux-gnueabihf-8.4.01/bin/aarch64-linux-g*" },
+      cmd = { "clangd", "--clang-tidy"},
     }
   end,
 
