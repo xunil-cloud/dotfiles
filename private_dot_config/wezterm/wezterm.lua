@@ -18,10 +18,16 @@ config.color_scheme = 'Breeze (Gogh)'
 -- config.color_scheme = 'OneDark (base16)'
 config.font_size = 14
 
--- Spawn a fish shell in login mode
-config.default_prog = { '/usr/bin/fish', '-l' }
+config.default_prog = { 'fish' }
 
 config.scrollback_lines = 100000
+
+
+local act = wezterm.action
+config.keys = {
+  { key = 'UpArrow', mods = 'SHIFT', action = act.ScrollToPrompt(-1) },
+  { key = 'DownArrow', mods = 'SHIFT', action = act.ScrollToPrompt(1) },
+}
 
 -- and finally, return the configuration to wezterm
 return config
