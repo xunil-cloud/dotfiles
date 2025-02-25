@@ -267,6 +267,17 @@ require('lazy').setup({
       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
     }
   },
+  {
+  'stevearc/oil.nvim',
+  ---@module 'oil'
+  ---@type oil.SetupOpts
+  opts = {},
+  -- Optional dependencies
+  -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
+  dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+  -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+  lazy = false,
+  },
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
@@ -282,7 +293,7 @@ require('lazy').setup({
   --
   --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
   --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
-  -- { import = 'custom.plugins' },
+  { import = 'config.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -333,7 +344,7 @@ vim.o.splitright = true
 vim.o.cursorline = true
 vim.o.laststatus = 3
 
-vim.o.scrolloff = 8
+vim.o.scrolloff = 20
 
 -- [[ Basic Keymaps ]]
 
@@ -670,6 +681,15 @@ cmp.setup {
     { name = 'luasnip' },
     { name = 'path' },
     { name = 'buffer' },
+  },
+  window = {
+    completion = {
+      border = 'rounded',
+      scrollbar = false,
+    },
+    documentation = {
+      border = 'rounded',
+    },
   },
 }
 require("symbols-outline").setup()
