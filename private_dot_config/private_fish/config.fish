@@ -5,6 +5,8 @@ alias vim=nvim
 
 alias gr='cd (git rev-parse --show-toplevel)'
 
+alias ip='ip -c'
+
 abbr che chezmoi
 
 set -x EDITOR nvim
