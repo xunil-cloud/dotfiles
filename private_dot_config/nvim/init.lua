@@ -256,6 +256,19 @@ require('lazy').setup({
     'p00f/clangd_extensions.nvim',
     opts = {},
   },
+  {
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",  -- required
+      "sindrets/diffview.nvim", -- optional - Diff integration
+
+      -- Only one of these is needed.
+      "nvim-telescope/telescope.nvim", -- optional
+      -- "ibhagwan/fzf-lua",              -- optional
+      -- "echasnovski/mini.pick",         -- optional
+    },
+    config = true
+  },
 
   -- {
   --   "nvim-neo-tree/neo-tree.nvim",
@@ -268,15 +281,19 @@ require('lazy').setup({
   --   }
   -- },
   {
-  'stevearc/oil.nvim',
-  ---@module 'oil'
-  ---@type oil.SetupOpts
-  opts = {},
-  -- Optional dependencies
-  -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
-  dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
-  -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
-  lazy = false,
+    'stevearc/oil.nvim',
+    opts = {
+      view_options = {
+        -- Show files and directories that start with "."
+        -- Toggle with 'g.' keymap
+        show_hidden = true,
+      },
+    },
+    -- Optional dependencies
+    -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
+    dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+    -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+    lazy = false,
   },
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
@@ -613,7 +630,7 @@ mason_lspconfig.setup_handlers {
       capabilities = capabilities,
       on_attach = on_attach,
       settings = servers['clangd'],
-      cmd = { "clangd", "--clang-tidy"},
+      cmd = { "clangd", "--clang-tidy" },
     }
   end,
 
