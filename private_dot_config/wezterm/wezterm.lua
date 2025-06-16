@@ -17,6 +17,11 @@ end
 config.color_scheme = 'Breeze (Gogh)'
 -- config.color_scheme = 'OneDark (base16)'
 config.font_size = 16
+config.font = wezterm.font_with_fallback {
+  'JetBrains Mono',
+  'Noto Sans TC',
+  'Noto Sans CJK TC',
+}
 
 config.default_prog = { 'fish' }
 
