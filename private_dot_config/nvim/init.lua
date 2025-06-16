@@ -64,6 +64,7 @@ vim.opt.rtp:prepend(lazypath)
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
+  { 'echasnovski/mini.surround', opts = {} },
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -99,7 +100,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',          opts = {} },
+  { 'folke/which-key.nvim',      opts = {} },
   {
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -630,7 +631,7 @@ mason_lspconfig.setup_handlers {
       capabilities = capabilities,
       on_attach = on_attach,
       settings = servers['clangd'],
-      cmd = { "clangd", "--clang-tidy" },
+      cmd = { "clangd", "--background-index", "--clang-tidy" },
     }
   end,
 
