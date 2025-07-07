@@ -66,6 +66,84 @@ require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
   { 'echasnovski/mini.surround', opts = {} },
 
+  {
+    'saghen/blink.cmp',
+    -- optional: provides snippets for the snippet source
+    dependencies = {
+      'rafamadriz/friendly-snippets',
+      {
+        'p00f/clangd_extensions.nvim',
+        opts = {}
+      }
+    },
+
+    -- use a release tag to download pre-built binaries
+    version = '1.*',
+    -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+    -- build = 'cargo build --release',
+    -- If you use nix, you can build from source using latest nightly rust with:
+    -- build = 'nix run .#build-plugin',
+
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
+      -- 'super-tab' for mappings similar to vscode (tab to accept)
+      -- 'enter' for enter to accept
+      -- 'none' for no mappings
+      --
+      -- All presets have the following mappings:
+      -- C-space: Open menu or open docs if already open
+      -- C-n/C-p or Up/Down: Select next/previous item
+      -- C-e: Hide menu
+      -- C-k: Toggle signature help (if signature.enabled = true)
+      --
+      -- See :h blink-cmp-config-keymap for defining your own keymap
+      keymap = { preset = 'enter' },
+
+      appearance = {
+        -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+        -- Adjusts spacing to ensure icons are aligned
+        nerd_font_variant = 'mono'
+      },
+
+      -- (Default) Only show the documentation popup when manually triggered
+      completion = {
+        menu = { border = 'single' },
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 500,
+          window = { border = 'single' }
+        },
+      },
+      signature = {
+        enabled = true,
+        window = { border = 'single' }
+      },
+
+      -- Default list of enabled providers defined so that you can extend it
+      -- elsewhere in your config, without redefining it, due to `opts_extend`
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+      },
+
+      -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+      -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+      -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+      --
+      -- See the fuzzy documentation for more information
+      fuzzy = {
+        implementation = "prefer_rust_with_warning",
+        sorts = {
+          -- require("clangd_extensions.cmp_scores"),
+          'score',
+          'sort_text',
+        }
+      },
+    },
+    opts_extend = { "sources.default" }
+  },
+
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -80,8 +158,8 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
+      {'williamboman/mason.nvim', branch = 'v1.x' },
+      {'williamboman/mason-lspconfig.nvim', branch = 'v1.x' },
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -97,6 +175,7 @@ require('lazy').setup({
     'hrsh7th/nvim-cmp',
     dependencies = { 'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-path',
       'hrsh7th/cmp-buffer', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
+    enabled = false,
   },
 
   -- Useful plugin to show you pending keybinds.
@@ -253,10 +332,10 @@ require('lazy').setup({
     name = "project_nvim",
     opts = {},
   },
-  {
-    'p00f/clangd_extensions.nvim',
-    opts = {},
-  },
+  -- {
+  --   'p00f/clangd_extensions.nvim',
+  --   opts = {},
+  -- },
   {
     "NeogitOrg/neogit",
     dependencies = {
@@ -590,7 +669,8 @@ require('neodev').setup()
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
 
 -- Setup mason so it can manage external tooling
 require('mason').setup()
@@ -638,78 +718,78 @@ mason_lspconfig.setup_handlers {
 }
 
 -- nvim-cmp setup
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
+-- local cmp = require 'cmp'
+-- local luasnip = require 'luasnip'
 
-luasnip.config.setup {}
+-- luasnip.config.setup {}
 
-cmp.setup {
-  sorting = {
-    priority_weight = 2,
-    comparators = {
-      cmp.config.compare.offset,
-      cmp.config.compare.exact,
-      -- compare.scopes,
-      -- cmp.compare.score,
-      require("clangd_extensions.cmp_scores"),
-      cmp.config.compare.recently_used,
-      cmp.config.compare.locality,
-      cmp.config.compare.kind,
-      -- compare.sort_text,
-      cmp.config.compare.length,
-      cmp.config.compare.order,
-    },
-  },
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-    { name = 'path' },
-    { name = 'buffer' },
-  },
-  window = {
-    completion = {
-      border = 'rounded',
-      scrollbar = false,
-    },
-    documentation = {
-      border = 'rounded',
-    },
-  },
-}
+-- cmp.setup {
+--   sorting = {
+--     priority_weight = 2,
+--     comparators = {
+--       cmp.config.compare.offset,
+--       cmp.config.compare.exact,
+--       -- compare.scopes,
+--       -- cmp.compare.score,
+--       require("clangd_extensions.cmp_scores"),
+--       cmp.config.compare.recently_used,
+--       cmp.config.compare.locality,
+--       cmp.config.compare.kind,
+--       -- compare.sort_text,
+--       cmp.config.compare.length,
+--       cmp.config.compare.order,
+--     },
+--   },
+--   snippet = {
+--     expand = function(args)
+--       luasnip.lsp_expand(args.body)
+--     end,
+--   },
+--   mapping = cmp.mapping.preset.insert {
+--     ['<C-n>'] = cmp.mapping.select_next_item(),
+--     ['<C-p>'] = cmp.mapping.select_prev_item(),
+--     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+--     ['<C-f>'] = cmp.mapping.scroll_docs(4),
+--     ['<C-Space>'] = cmp.mapping.complete {},
+--     ['<CR>'] = cmp.mapping.confirm {
+--       behavior = cmp.ConfirmBehavior.Replace,
+--       select = true,
+--     },
+--     ['<Tab>'] = cmp.mapping(function(fallback)
+--       if cmp.visible() then
+--         cmp.select_next_item()
+--       elseif luasnip.expand_or_jumpable() then
+--         luasnip.expand_or_jump()
+--       else
+--         fallback()
+--       end
+--     end, { 'i', 's' }),
+--     ['<S-Tab>'] = cmp.mapping(function(fallback)
+--       if cmp.visible() then
+--         cmp.select_prev_item()
+--       elseif luasnip.jumpable(-1) then
+--         luasnip.jump(-1)
+--       else
+--         fallback()
+--       end
+--     end, { 'i', 's' }),
+--   },
+--   sources = {
+--     { name = 'nvim_lsp' },
+--     { name = 'luasnip' },
+--     { name = 'path' },
+--     { name = 'buffer' },
+--   },
+--   window = {
+--     completion = {
+--       border = 'rounded',
+--       scrollbar = false,
+--     },
+--     documentation = {
+--       border = 'rounded',
+--     },
+--   },
+-- }
 require("symbols-outline").setup()
 
 require('telescope').load_extension('projects')
