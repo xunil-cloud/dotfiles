@@ -158,15 +158,25 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      {'williamboman/mason.nvim', branch = 'v1.x' },
-      {'williamboman/mason-lspconfig.nvim', branch = 'v1.x' },
+      -- { 'williamboman/mason.nvim',           branch = 'v1.x' },
+      -- { 'williamboman/mason-lspconfig.nvim', branch = 'v1.x' },
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',                 opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
+      {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+          library = {
+            -- See the configuration section for more details
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+          },
+        },
+      },
     },
   },
 
@@ -179,7 +189,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',      opts = {} },
+  { 'folke/which-key.nvim',          opts = {} },
   {
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -599,19 +609,20 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagn
 
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
+local on_attach = function(args)
   -- NOTE: Remember that lua is a real programming language, and as such it is possible
   -- to define small helper and utility functions so you don't have to repeat yourself
   -- many times.
   --
   -- In this case, we create a function that lets us more easily define mappings specific
   -- for LSP related items. It sets the mode, buffer and description for us each time.
+
   local nmap = function(keys, func, desc)
     if desc then
       desc = 'LSP: ' .. desc
     end
 
-    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+    vim.keymap.set('n', keys, func, { buffer = args.buf, desc = desc })
   end
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
@@ -637,7 +648,7 @@ local on_attach = function(_, bufnr)
   end, '[W]orkspace [L]ist Folders')
 
   -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+  vim.api.nvim_buf_create_user_command(args.buf, 'Format', function(_)
     vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
   end, { desc = 'Format current buffer with LSP' })
   vim.keymap.set('n', '<leader>f', ':Format<cr>', { desc = 'Format current buffer with LSP' })
@@ -664,23 +675,21 @@ local servers = {
   },
 }
 
--- Setup neovim lua configuration
-require('neodev').setup()
-
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 -- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+-- print(
 
 -- Setup mason so it can manage external tooling
-require('mason').setup()
+-- require('mason').setup()
 
 -- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
+-- local mason_lspconfig = require 'mason-lspconfig'
 
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
+-- mason_lspconfig.setup {
+--   ensure_installed = vim.tbl_keys(servers),
+-- }
 --[[
  -- require("mason-lspconfig").setup_handlers {
           -- The first entry (without a key) will be the default handler
@@ -697,25 +706,33 @@ mason_lspconfig.setup {
       }
       ]]
 --
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-    }
-  end,
+-- mason_lspconfig.setup_handlers {
+--   function(server_name)
+--     require('lspconfig')[server_name].setup {
+--       capabilities = capabilities,
+--       on_attach = on_attach,
+--       settings = servers[server_name],
+--     }
+--   end,
+--
+--   ['clangd'] = function()
+--     require("lspconfig")['clangd'].setup {
+--       capabilities = capabilities,
+--       on_attach = on_attach,
+--       settings = servers['clangd'],
+--       cmd = { "clangd", "--background-index", "--clang-tidy" },
+--     }
+--   end,
+--
+-- }
 
-  ['clangd'] = function()
-    require("lspconfig")['clangd'].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers['clangd'],
-      cmd = { "clangd", "--background-index", "--clang-tidy" },
-    }
-  end,
+vim.lsp.enable('clangd')
+vim.lsp.enable('lua_ls')
 
-}
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('my.lsp', {}),
+  callback = on_attach
+})
 
 -- nvim-cmp setup
 -- local cmp = require 'cmp'
@@ -793,6 +810,12 @@ mason_lspconfig.setup_handlers {
 require("symbols-outline").setup()
 
 require('telescope').load_extension('projects')
+vim.keymap.del('n', 'grr')
+vim.keymap.del('n', 'grt')
+vim.keymap.del('n', 'gri')
+vim.keymap.del('n', 'gra')
+vim.keymap.del('n', 'grn')
+
 -- require'telescope'.extensions.projects.projects{}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
