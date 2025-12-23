@@ -65,6 +65,14 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
   { 'echasnovski/mini.surround', opts = {} },
+  { "miikanissi/modus-themes.nvim", priority = 1000,
+    config = function()
+      require("modus-themes").setup({
+        -- variant = "tinted", -- Theme comes in four variants `default`, `tinted`, `deuteranopia`, and `tritanopia`
+      })
+      vim.cmd.colorscheme 'modus'
+    end,
+  },
 
   {
     'saghen/blink.cmp',
@@ -232,14 +240,12 @@ require('lazy').setup({
         map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
         map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
         map('n', '<leader>hS', gitsigns.stage_buffer)
-        map('n', '<leader>hu', gitsigns.undo_stage_hunk)
         map('n', '<leader>hR', gitsigns.reset_buffer)
         map('n', '<leader>hp', gitsigns.preview_hunk_inline)
         map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end)
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
         map('n', '<leader>hd', gitsigns.diffthis)
         map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
-        map('n', '<leader>td', gitsigns.toggle_deleted)
 
         -- Text object
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
@@ -255,8 +261,9 @@ require('lazy').setup({
       require('onedark').setup {
         style = 'warmer'
       }
-      vim.cmd.colorscheme 'onedark'
+      -- vim.cmd.colorscheme 'onedark'
     end,
+    enabled = false,
   },
 
   {
@@ -279,8 +286,8 @@ require('lazy').setup({
     -- Enable `lukas-reineke/indent-blankline.nvim`
     -- See `:help indent_blankline.txt`
     opts = {
-      indent = { char = "|" },
-      scope = { enabled = false },
+      indent = { char = "│" },
+      -- scope = { enabled = false },
 
       -- show_trailing_blankline_indent = false,
     },
@@ -313,7 +320,7 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     config = function()
-      pcall(require('nvim-treesitter.install').update { with_sync = true })
+      -- pcall(require('nvim-treesitter.install').update { with_sync = true })
     end,
   },
 
@@ -324,6 +331,7 @@ require('lazy').setup({
     'ahmedkhalf/project.nvim',
     name = "project_nvim",
     opts = {},
+    -- enabled = false,
   },
   {
     "NeogitOrg/neogit",
@@ -581,8 +589,8 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump{count = -1} end, { desc = "Go to previous diagnostic message" })
+vim.keymap.set('n', ']d', function () vim.diagnostic.jump{count = 1} end, { desc = "Go to next diagnostic message" })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
@@ -662,8 +670,6 @@ vim.keymap.del('n', 'grt')
 vim.keymap.del('n', 'gri')
 vim.keymap.del('n', 'gra')
 vim.keymap.del('n', 'grn')
-
--- require'telescope'.extensions.projects.projects{}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
