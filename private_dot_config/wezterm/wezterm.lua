@@ -14,8 +14,9 @@ end
 
 -- For example, changing the color scheme:
 -- config.color_scheme = 'Chalk'
-config.color_scheme = 'Breeze (Gogh)'
--- config.color_scheme = 'OneDark (base16)'
+-- config.color_scheme = 'Modus Vivendi'
+config.color_scheme = 'Classic Dark (base16)'
+
 config.font_size = 16
 config.font = wezterm.font_with_fallback {
   'JetBrains Mono',
