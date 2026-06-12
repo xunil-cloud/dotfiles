@@ -324,9 +324,8 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'simrat39/symbols-outline.nvim'
-  },
+  'simrat39/symbols-outline.nvim',
+
   {
     'ahmedkhalf/project.nvim',
     name = "project_nvim",
@@ -371,6 +370,21 @@ require('lazy').setup({
     dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
     -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
     lazy = false,
+  },
+  {
+    'Bekaboo/dropbar.nvim',
+    -- optional, but required for fuzzy finder support
+    dependencies = {
+      'nvim-telescope/telescope-fzf-native.nvim',
+      build = 'make'
+    },
+    config = function()
+      local dropbar_api = require('dropbar.api')
+      vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
+      vim.keymap.set('n', '[;', dropbar_api.goto_context_start, { desc = 'Go to start of current context' })
+      vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
+    end,
+    enabled = true,
   },
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
