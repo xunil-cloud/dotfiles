@@ -315,7 +315,17 @@ require('lazy').setup({
     branch = "main"
   },
 
-  'simrat39/symbols-outline.nvim',
+  {
+    "hedyhli/outline.nvim",
+    lazy = true,
+    cmd = { "Outline", "OutlineOpen" },
+    keys = { -- Example mapping to toggle outline
+      { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
+    },
+    opts = {
+      -- Your setup opts here
+    },
+  },
 
   {
     'ahmedkhalf/project.nvim',
@@ -539,8 +549,8 @@ vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 
 
 -- treeistter folds
-vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-vim.wo[0][0].foldmethod = 'expr'
+-- vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+-- vim.wo[0][0].foldmethod = 'expr'
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', function() vim.diagnostic.jump{count = -1} end, { desc = "Go to previous diagnostic message" })
@@ -613,8 +623,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('my.lsp', {}),
   callback = on_attach
 })
-
-require("symbols-outline").setup()
 
 require('telescope').load_extension('projects')
 
