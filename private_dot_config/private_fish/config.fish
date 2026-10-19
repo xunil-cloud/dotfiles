@@ -26,9 +26,12 @@ end
 fish_add_path $HOME/.local/bin
 try_fish_add_path $HOME/.cargo/bin
 
-starship init fish | source
+if status is-interactive
+    starship init fish | source
+    zellij setup --generate-completion fish | source
+end
+
 zoxide init fish | source
-zellij setup --generate-completion fish | source
 
 ## pyenv setting, not currently in use
 # set -Ux PYENV_ROOT $HOME/.pyenv
