@@ -9,9 +9,9 @@ alias ip='ip -c'
 
 abbr che chezmoi
 
-set -x EDITOR nvim
-set -x VISUAL nvim
-set -x MANPAGER 'nvim +Man!'
+set -x EDITOR $(type nvim -p)
+set -x VISUAL $EDITOR
+set -x MANPAGER "$EDITOR +Man!"
 
 set -x CMAKE_COLOR_DIAGNOSTICS ON
 set -x CMAKE_EXPORT_COMPILE_COMMANDS ON
