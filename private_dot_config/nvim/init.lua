@@ -73,6 +73,10 @@ require('lazy').setup({
       vim.cmd.colorscheme 'modus'
     end,
   },
+  {
+    'stevearc/conform.nvim',
+    opts = {},
+  },
 
   {
     'saghen/blink.cmp',
@@ -337,8 +341,18 @@ require('lazy').setup({
     "NeogitOrg/neogit",
     dependencies = {
       "nvim-lua/plenary.nvim",  -- required
-      "sindrets/diffview.nvim", -- optional - Diff integration
+      -- "sindrets/diffview.nvim", -- optional - Diff integration
 
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
+    opts = {explorer = {
+      position = "bottom",  -- "left" or "bottom"
+      height = 10,
+      width = 30,
+    }
+  }
+  },
       -- Only one of these is needed.
       "nvim-telescope/telescope.nvim", -- optional
       -- "ibhagwan/fzf-lua",              -- optional
@@ -596,7 +610,7 @@ local on_attach = function(args)
   vim.api.nvim_buf_create_user_command(args.buf, 'Format', function(_)
     vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
   end, { desc = 'Format current buffer with LSP' })
-  vim.keymap.set('n', '<leader>f', ':Format<cr>', { desc = 'Format current buffer with LSP' })
+  -- vim.keymap.set('n', '<leader>f', ':Format<cr>', { desc = 'Format current buffer with LSP' })
 end
 -- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
@@ -632,6 +646,36 @@ vim.keymap.del('n', 'grt')
 vim.keymap.del('n', 'gri')
 vim.keymap.del('n', 'gra')
 vim.keymap.del('n', 'grn')
+local neogit = require('neogit')
+vim.keymap.set("n", "<leader>gg", neogit.open, { desc = "Open Neogit UI" })
+
+
+require("conform").setup({
+  formatters_by_ft = {
+    lua = { "stylua" },
+    cpp = { "clang-format"},
+    -- Conform will run multiple formatters sequentially
+    python = { "isort", "black" },
+    -- You can customize some of the format options for the filetype (:help conform.format)
+    rust = { "rustfmt", lsp_format = "fallback" },
+    -- Conform will run the first available formatter
+    javascript = { "prettierd", "prettier", stop_after_first = true },
+  },
+})
+
+vim.api.nvim_create_user_command("Conform", function(args)
+  local range = nil
+  if args.count ~= -1 then
+    -- print(vim.inspect{args})
+    local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+    range = {
+      start = { args.line1, 0 },
+      ["end"] = { args.line2, end_line:len() },
+    }
+  end
+  require("conform").format({ async = true, lsp_format = "fallback", range = range })
+end, { range = true })
+vim.keymap.set('', '<leader>f', ':Conform<cr>', { desc = 'Format current buffer with Conform' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
