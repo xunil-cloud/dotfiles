@@ -65,7 +65,9 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
   { 'echasnovski/mini.surround', opts = {} },
-  { "miikanissi/modus-themes.nvim", priority = 1000,
+  {
+    "miikanissi/modus-themes.nvim",
+    priority = 1000,
     config = function()
       require("modus-themes").setup({
         -- variant = "tinted", -- Theme comes in four variants `default`, `tinted`, `deuteranopia`, and `tritanopia`
@@ -170,7 +172,7 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',                 opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       {
@@ -188,7 +190,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',          opts = {} },
+  { 'folke/which-key.nvim',      opts = {} },
   {
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -300,10 +302,11 @@ require('lazy').setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim',         opts = {} },
+  { 'numToStr/Comment.nvim', opts = {} },
 
   {
-    'nvim-telescope/telescope.nvim', version = '*',
+    'nvim-telescope/telescope.nvim',
+    version = '*',
     enabled = true,
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -347,19 +350,20 @@ require('lazy').setup({
   {
     "NeogitOrg/neogit",
     dependencies = {
-      "nvim-lua/plenary.nvim",  -- required
+      "nvim-lua/plenary.nvim", -- required
       -- "sindrets/diffview.nvim", -- optional - Diff integration
 
-  {
-    "esmuellert/codediff.nvim",
-    cmd = "CodeDiff",
-    opts = {explorer = {
-      position = "bottom",  -- "left" or "bottom"
-      height = 10,
-      width = 30,
-    }
-  }
-  },
+      {
+        "esmuellert/codediff.nvim",
+        cmd = "CodeDiff",
+        opts = {
+          explorer = {
+            position = "bottom", -- "left" or "bottom"
+            height = 10,
+            width = 30,
+          }
+        }
+      },
       -- Only one of these is needed.
       "nvim-telescope/telescope.nvim", -- optional
       -- "ibhagwan/fzf-lua",              -- optional
@@ -423,7 +427,7 @@ require('lazy').setup({
   --
   --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
   --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
-  { import = 'config.plugins' },
+  -- { import = 'config.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -557,7 +561,7 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp tags' })
-require('nvim-treesitter').install { 'rust', 'javascript', 'cpp', 'json', 'markdown'}
+require('nvim-treesitter').install { 'rust', 'javascript', 'cpp', 'json', 'markdown' }
 
 -- treesitter highlighting
 vim.api.nvim_create_autocmd('FileType', {
@@ -574,15 +578,15 @@ vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 -- vim.wo[0][0].foldmethod = 'expr'
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', function() vim.diagnostic.jump{count = -1} end, { desc = "Go to previous diagnostic message" })
-vim.keymap.set('n', ']d', function () vim.diagnostic.jump{count = 1} end, { desc = "Go to next diagnostic message" })
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump { count = -1 } end,
+  { desc = "Go to previous diagnostic message" })
+vim.keymap.set('n', ']d', function() vim.diagnostic.jump { count = 1 } end, { desc = "Go to next diagnostic message" })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(args)
-
   local nmap = function(keys, func, desc)
     if desc then
       desc = 'LSP: ' .. desc
@@ -627,7 +631,8 @@ vim.lsp.config('clangd',
       'clangd',
       '--clang-tidy',
       '--background-index',
-    }})
+    }
+  })
 vim.lsp.enable('clangd')
 
 vim.lsp.config('lua_ls',
@@ -637,7 +642,8 @@ vim.lsp.config('lua_ls',
         workspace = { checkThirdParty = false },
         telemetry = { enable = false },
       },
-    }})
+    }
+  })
 vim.lsp.enable('lua_ls')
 
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -660,7 +666,7 @@ vim.keymap.set("n", "<leader>gg", neogit.open, { desc = "Open Neogit UI" })
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
-    cpp = { "clang-format"},
+    cpp = { "clang-format" },
     -- Conform will run multiple formatters sequentially
     python = { "isort", "black" },
     -- You can customize some of the format options for the filetype (:help conform.format)
