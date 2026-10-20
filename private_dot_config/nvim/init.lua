@@ -335,7 +335,14 @@ require('lazy').setup({
     'ahmedkhalf/project.nvim',
     name = "project_nvim",
     opts = {},
-    -- enabled = false,
+    enabled = false,
+  },
+  {
+    'DrKJeff16/project.nvim',
+    dependencies = { -- OPTIONAL. Choose any of the following
+      'nvim-telescope/telescope.nvim',
+    },
+    opts = {},
   },
   {
     "NeogitOrg/neogit",
